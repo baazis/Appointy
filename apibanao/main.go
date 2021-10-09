@@ -29,13 +29,42 @@ func main() {
 	r.HandleFunc("/posts", createPost).Methods("POST")
 	r.HandleFunc("/posts/{id}", getPost).Methods("GET")
 
-	// r.HandleFunc("/posts/users/{id}", getUserPosts).Methods("GET")
+	r.HandleFunc("/posts/users/{id}", getUserPosts).Methods("GET")
 
 	// set our port address
 	log.Fatal(http.ListenAndServe(":8000", r))
 
 }
 
+// 1
+func createUser(w http.ResponseWriter, r *http.Request) {
+	w.Header().Set("Content-Type", "application/json")
+
+	var user models.Users
+
+	// we decode our body request params
+	// hashedPassword, err := HashPassword(user.Password)
+	hashedPassword, err := HashPassword(user.Password)
+
+	
+	_ = json.NewDecoder(r.Body).Decode(&user)
+
+	// insert our user model.
+	user.Password = string(hashedPassword)
+	result, err := collection.InsertOne(context.TODO(), user)
+
+	if err != nil {
+		helper.GetError(err, w)
+		return
+	}
+
+	
+
+	json.NewEncoder(w).Encode(result)
+	// json.NewEncoder(w).Encode(hashedPassword)
+}
+
+// 2
 func getUser(w http.ResponseWriter, r *http.Request) {
 	// set header.
 	w.Header().Set("Content-Type", "application/json")
@@ -62,41 +91,27 @@ func getUser(w http.ResponseWriter, r *http.Request) {
 
 }
 
-func createUser(w http.ResponseWriter, r *http.Request) {
+
+// 3
+func createPost(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	var user models.Users
+	var post models.Post
 
 	// we decode our body request params
-	// hashedPassword, err := HashPassword(user.Password)
-	hashedPassword, err := HashPassword(user.Password)
-
-	
-	_ = json.NewDecoder(r.Body).Decode(&user)
+	_ = json.NewDecoder(r.Body).Decode(&post)
 
 	// insert our user model.
-	user.Password = string(hashedPassword)
-	result, err := collection.InsertOne(context.TODO(), user)
+	result, err := collection.InsertOne(context.TODO(), post)
 
 	if err != nil {
 		helper.GetError(err, w)
 		return
 	}
 
-	// Salt and hash the password using the bcrypt algorithm
-	// The second argument is the cost of hashing, which we arbitrarily set as 8 (this value can be more or less, depending on the computing power you wish to utilize)
-
-	// Next, insert the username, along with the hashed password into the database
-	// if _, err = db.Query("insert into users values ($1, $2)", user.Name, string(hashedPassword)); err != nil {
-	// 	// If there is any issue with inserting into the database, return a 500 error
-	// 	w.WriteHeader(http.StatusInternalServerError)
-	// 	return
-	// }
-
 	json.NewEncoder(w).Encode(result)
-	// json.NewEncoder(w).Encode(hashedPassword)
 }
-
+// 4
 func getPost(w http.ResponseWriter, r *http.Request) {
 	// set header.
 	w.Header().Set("Content-Type", "application/json")
@@ -120,44 +135,26 @@ func getPost(w http.ResponseWriter, r *http.Request) {
 	json.NewEncoder(w).Encode(post)
 }
 
-func createPost(w http.ResponseWriter, r *http.Request) {
+
+//5
+func getUserPosts(w http.ResponseWriter, r *http.Request) {
 	w.Header().Set("Content-Type", "application/json")
 
-	var post models.Post
+	
+	var user models.Users
+	var params = mux.Vars(r)
 
-	// we decode our body request params
-	_ = json.NewDecoder(r.Body).Decode(&post)
+	id, _ := primitive.ObjectIDFromHex(params["id"])
 
-	// insert our user model.
-	result, err := collection.InsertOne(context.TODO(), post)
-
+	filter := bson.M{"_id": id}
+	err := collection.FindOne(context.TODO(), filter).Decode(&user)
 	if err != nil {
 		helper.GetError(err, w)
 		return
 	}
 
-	json.NewEncoder(w).Encode(result)
+	json.NewEncoder(w).Encode(user.Posts)
 }
-
-// func getUserPosts(w http.ResponseWriter, r *http.Request) {
-// 	w.Header().Set("Content-Type", "application/json")
-
-// 	//var post models.Posts
-// 	var user models.Users
-// 	var params = mux.Vars(r)
-
-// 	id, _ := primitive.ObjectIDFromHex(params["id"])
-
-// 	filter := bson.M{"_id": id}
-// 	err := collection.FindOne(context.TODO(), filter).Decode(&user)
-// 	if err != nil {
-// 		helper.GetError(err, w)
-// 		return
-// 	}
-
-// 	fmt.Println("This route is under construction :)")
-// 	json.NewEncoder(w).Encode(user.Posts)
-// }
 
 func HashPassword(password string) (string, error) {
 	bytes, err := bcrypt.GenerateFromPassword([]byte(password), 14)
