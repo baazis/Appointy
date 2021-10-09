@@ -1,9 +1,11 @@
 # Appointy Go Task
-Task
+### Task
 
 ## 1-Create an User
 
 ![image](https://user-images.githubusercontent.com/58622363/136669639-9c0663d0-fc4b-43ad-b2bf-5b169c21ba3c.png)
+![image](https://user-images.githubusercontent.com/58622363/136672664-4b997cb3-4223-40ad-9dea-fdbe0fabe632.png)
+
 
 
 ## 2- Get a user using id
