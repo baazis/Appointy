@@ -29,5 +29,8 @@
 
 ## 5- List all posts of a user
 
-![image](https://user-images.githubusercontent.com/58622363/136669783-c6249dcd-bae5-47a5-9286-4d0a8fa77e10.png)
+![image](https://user-images.githubusercontent.com/58622363/136673136-3498d759-d0ea-4352-9217-cff4dcb94187.png)
 
+
+
+## SAURABH SINGH
