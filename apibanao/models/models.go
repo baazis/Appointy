@@ -12,7 +12,7 @@ type Users struct {
 	Name     string             `json:"name,omitempty" bson:"name,omitempty"`
 	Email    string             `json:"mail" bson:"mail,omitempty"`
 	Password string             `json:"pass" bson:"pass,omitempty"`
-	// Posts    []string           `json:"posts" bson:"posts"`
+	Posts    []string           `json:"posts" bson:"posts"`
 }
 
 type Post struct {
