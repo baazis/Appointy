@@ -58,9 +58,7 @@ func getUser(w http.ResponseWriter, r *http.Request) {
 
 	json.NewEncoder(w).Encode(user)
 
-	hashedPassword, err := HashPassword(user.Password)
-
-	json.NewEncoder(w).Encode(hashedPassword)
+	
 
 }
 
@@ -71,10 +69,13 @@ func createUser(w http.ResponseWriter, r *http.Request) {
 
 	// we decode our body request params
 	// hashedPassword, err := HashPassword(user.Password)
+	hashedPassword, err := HashPassword(user.Password)
 
+	
 	_ = json.NewDecoder(r.Body).Decode(&user)
 
 	// insert our user model.
+	user.Password = string(hashedPassword)
 	result, err := collection.InsertOne(context.TODO(), user)
 
 	if err != nil {
